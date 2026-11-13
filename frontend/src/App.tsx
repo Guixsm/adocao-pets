@@ -1,21 +1,38 @@
+import { Routes, Route, NavLink } from "react-router-dom";
 import FormularioPet from "./pages/FormularioPet";
-import { Routes, Route, Link } from "react-router-dom";
 import Home from "./pages/Home";
 import ListaPets from "./pages/ListaPets";
+import logo from "./assets/caozinho.gif";
 
 export default function App() {
   return (
     <>
-      <nav>
-        <Link to="/">Início</Link> | <Link to="/pets">Pets</Link> | 
-        <Link to="/pets/novo"> Cadastrar</Link>
-      </nav>
+     <nav className="menu">
+  <img src={logo} alt="" className="menu-logo-img" />
+
+  <div className="menu-texto">
+    <NavLink to="/" end className="menu-logo">Adoção de Pets</NavLink>
+
+    <div className="menu-links">
+      <NavLink to="/" end>Início</NavLink>
+      <NavLink to="/pets" end>Pets</NavLink>
+      <NavLink to="/pets/novo">Cadastrar</NavLink>
+    </div>
+  </div>
+</nav>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/pets" element={<ListaPets />} />
         <Route path="/pets/novo" element={<FormularioPet />} />
         <Route path="/pets/:id/editar" element={<FormularioPet />} />
       </Routes>
+
+      <footer className="rodape">
+  Adote, não compre! - {" "}
+  <a href="https://github.com/Guixsm/adocao-pets" target="_blank" rel="noreferrer">
+    Código no GitHub
+  </a>
+</footer>
     </>
   );
 }

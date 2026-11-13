@@ -1,3 +1,4 @@
+import Carregando from "../components/Carregando";
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -80,7 +81,11 @@ export default function FormularioPet() {
       } else {
         await criarPet(dados);
       }
-      navigate("/pets");
+      navigate("/pets", {
+  state: {
+    mensagem: editando ? "Pet atualizado com sucesso!" : "Pet cadastrado com sucesso!",
+  },
+});
     } catch (err) {
       setErro(mensagemDeErro(err));
     } finally {
@@ -88,69 +93,74 @@ export default function FormularioPet() {
     }
   }
 
-  if (carregandoPet) return <p>Carregando pet...</p>;
+  if (carregandoPet) return <Carregando texto="Carregando pet..." />;
 
   return (
-    <div>
-      <h1>{editando ? "Editar pet" : "Cadastrar pet"}</h1>
+  <div className="pagina-formulario">
+    <h1>{editando ? "Editar pet" : "Cadastrar pet"}</h1>
 
-      {erro && <p style={{ color: "crimson" }}>{erro}</p>}
+    {erro && <p className="erro">{erro}</p>}
 
-      <form onSubmit={enviar}>
-        <div>
-          <label>Nome</label>
-          <input value={nome} onChange={(e) => setNome(e.target.value)} />
-        </div>
+    <form className="formulario" onSubmit={enviar}>
+      <div className="campo-largo">
+        <label htmlFor="nome">Nome</label>
+        <input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+      </div>
 
-        <div>
-          <label>Espécie</label>
-          <select value={especieId} onChange={(e) => setEspecieId(e.target.value)}>
-            <option value="">Selecione...</option>
-            {especies.map((esp) => (
-              <option key={esp.id} value={esp.id}>
-                {esp.nome}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div>
+        <label htmlFor="especie">Espécie</label>
+        <select id="especie" value={especieId} onChange={(e) => setEspecieId(e.target.value)}>
+          <option value="">Selecione...</option>
+          {especies.map((esp) => (
+            <option key={esp.id} value={esp.id}>
+              {esp.nome}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        <div>
-          <label>Idade</label>
-          <input type="number" value={idade} onChange={(e) => setIdade(e.target.value)} />
-        </div>
+      <div>
+        <label htmlFor="idade">Idade</label>
+        <input id="idade" type="number" value={idade} onChange={(e) => setIdade(e.target.value)} />
+      </div>
 
-        <div>
-          <label>Porte</label>
-          <select value={porte} onChange={(e) => setPorte(e.target.value)}>
-            <option value="pequeno">Pequeno</option>
-            <option value="medio">Médio</option>
-            <option value="grande">Grande</option>
-          </select>
-        </div>
+      <div>
+        <label htmlFor="porte">Porte</label>
+        <select id="porte" value={porte} onChange={(e) => setPorte(e.target.value)}>
+          <option value="pequeno">Pequeno</option>
+          <option value="medio">Médio</option>
+          <option value="grande">Grande</option>
+        </select>
+      </div>
 
-        <div>
-          <label>Status</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="disponivel">Disponível</option>
-            <option value="em_processo">Em processo</option>
-            <option value="adotado">Adotado</option>
-          </select>
-        </div>
+      <div>
+        <label htmlFor="status">Status</label>
+        <select id="status" value={status} onChange={(e) => setStatus(e.target.value)}>
+          <option value="disponivel">Disponível</option>
+          <option value="em_processo">Em processo</option>
+          <option value="adotado">Adotado</option>
+        </select>
+      </div>
 
-        <div>
-          <label>Descrição</label>
-          <textarea value={descricao} onChange={(e) => setDescricao(e.target.value)} />
-        </div>
+      <div className="campo-largo">
+        <label htmlFor="foto">Foto (link)</label>
+        <input id="foto" value={fotoUrl} onChange={(e) => setFotoUrl(e.target.value)} />
+      </div>
 
-        <div>
-          <label>Foto (link)</label>
-          <input value={fotoUrl} onChange={(e) => setFotoUrl(e.target.value)} />
-        </div>
+      <div className="campo-largo">
+        <label htmlFor="descricao">Descrição</label>
+        <textarea id="descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)} />
+      </div>
 
+      <div className="form-acoes">
         <button type="submit" disabled={enviando}>
           {enviando ? "Salvando..." : editando ? "Salvar alterações" : "Cadastrar"}
         </button>
-      </form>
-    </div>
-  );
+        <button type="button" className="botao-secundario" onClick={() => navigate("/pets")}>
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+);
 }

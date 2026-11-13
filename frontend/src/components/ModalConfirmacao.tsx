@@ -18,30 +18,19 @@ export default function ModalConfirmacao({
   onCancelar,
 }: Props) {
   return (
-    <div
-      className="modal-fundo"
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div
-        className="modal"
-        style={{ background: "white", color: "#222", padding: 24, borderRadius: 12, maxWidth: 360 }}
-      >
+    <div className="modal-fundo">
+      <div className="modal">
         <h2>{titulo}</h2>
         <p>{mensagem}</p>
-        {erro && <p style={{ color: "crimson" }}>{erro}</p>}
-        <button onClick={onCancelar} disabled={carregando}>
-          Cancelar
-        </button>
-        <button onClick={onConfirmar} disabled={carregando}>
-          {carregando ? "Removendo..." : textoConfirmar}
-        </button>
+        {erro && <p className="erro">{erro}</p>}
+        <div className="modal-acoes">
+          <button className="botao-secundario" onClick={onCancelar} disabled={carregando}>
+            Cancelar
+          </button>
+          <button onClick={onConfirmar} disabled={carregando}>
+            {carregando ? "Removendo..." : textoConfirmar}
+          </button>
+        </div>
       </div>
     </div>
   );
