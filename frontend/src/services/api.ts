@@ -1,3 +1,5 @@
+import type { Pet } from "../types";
+
 export const API_URL = "http://localhost:3000";
 
 export type DadosPet = {
@@ -7,7 +9,16 @@ export type DadosPet = {
   porte: string;
   descricao: string | null;
   foto_url: string | null;
+  status: string;
 };
+
+async function tratarResposta(resposta: Response) {
+  const corpo = await resposta.json();
+  if (!resposta.ok) {
+    throw new Error(corpo.erro ?? "Erro na requisição");
+  }
+  return corpo;
+}
 
 export async function criarPet(dados: DadosPet): Promise<{ id: number }> {
   const resposta = await fetch(`${API_URL}/pets`, {
@@ -15,11 +26,19 @@ export async function criarPet(dados: DadosPet): Promise<{ id: number }> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dados),
   });
+  return tratarResposta(resposta);
+}
 
-  const corpo = await resposta.json();
+export async function buscarPet(id: number): Promise<Pet> {
+  const resposta = await fetch(`${API_URL}/pets/${id}`);
+  return tratarResposta(resposta);
+}
 
-  if (!resposta.ok) {
-    throw new Error(corpo.erro ?? "Erro ao salvar o pet");
-  }
-  return corpo;
+export async function atualizarPet(id: number, dados: DadosPet): Promise<{ id: number }> {
+  const resposta = await fetch(`${API_URL}/pets/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dados),
+  });
+  return tratarResposta(resposta);
 }

@@ -14,6 +14,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/pets" element={<ListaPets />} />
         <Route path="/pets/novo" element={<FormularioPet />} />
+        <Route path="/pets/:id/editar" element={<FormularioPet />} />
       </Routes>
     </>
   );

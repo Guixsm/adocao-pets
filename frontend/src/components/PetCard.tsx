@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { Pet } from "../types";
 
 type Props = {
@@ -13,6 +14,9 @@ export default function PetCard({ pet }: Props) {
                 </p>0
                 <p>{pet.descricao}</p>
                 <strong>{pet.status}</strong>
+                <div>
+  <Link to={`/pets/${pet.id}/editar`}>Editar</Link>
+</div>
                 </div>
     );
 }

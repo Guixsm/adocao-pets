@@ -22,7 +22,7 @@ export async function listarPets(req: Request, res: Response) {
     const where = condicoes.length ? "WHERE " + condicoes.join(" AND ") : "";
 
     const [rows] = await pool.query(
-        `SELECT p.id, p.nome, p.idade, p.porte, p.descricao, p.foto_url, p.status, 
+        `SELECT p.id, p.nome, p.especie_id, p.idade, p.porte, p.descricao, p.foto_url, p.status, 
             e.nome AS especie
         FROM pets p
         JOIN especies e ON e.id = p.especie_id
@@ -40,7 +40,7 @@ export async function buscarPet(req: Request, res: Response) {
     }
 
     const [rows] = await pool.query<RowDataPacket[]>(
-        `SELECT p.id, p.nome, p.idade, p.porte, p.descricao, p.foto_url, p.status,
+        `SELECT p.id, p.nome, p.especie_id, p.idade, p.porte, p.descricao, p.foto_url, p.status,
                e.nome AS especie
         FROM pets p
         JOIN especies e ON e.id = p.especie_id

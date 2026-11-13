@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import { API_URL, criarPet } from "../services/api";
+import { useNavigate, useParams } from "react-router-dom";
+import { API_URL, atualizarPet, buscarPet, criarPet } from "../services/api";
 
 type Especie = { id: number; nome: string };
 
+function mensagemDeErro(err: unknown) {
+  if (err instanceof TypeError) {
+    return "Não foi possível conectar ao servidor. Ele está ligado?";
+  }
+  return (err as Error).message;
+}
+
 export default function FormularioPet() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const editando = id !== undefined;
 
   const [especies, setEspecies] = useState<Especie[]>([]);
   const [nome, setNome] = useState("");
@@ -15,7 +24,9 @@ export default function FormularioPet() {
   const [porte, setPorte] = useState("pequeno");
   const [descricao, setDescricao] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
+  const [status, setStatus] = useState("disponivel");
 
+  const [carregandoPet, setCarregandoPet] = useState(editando);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -27,35 +38,61 @@ export default function FormularioPet() {
     carregarEspecies();
   }, []);
 
+  useEffect(() => {
+    if (!editando) return;
+    async function carregarPet() {
+      try {
+        const pet = await buscarPet(Number(id));
+        setNome(pet.nome);
+        setEspecieId(String(pet.especie_id));
+        setIdade(String(pet.idade));
+        setPorte(pet.porte);
+        setDescricao(pet.descricao ?? "");
+        setFotoUrl(pet.foto_url ?? "");
+        setStatus(pet.status);
+      } catch (err) {
+        setErro(mensagemDeErro(err));
+      } finally {
+        setCarregandoPet(false);
+      }
+    }
+    carregarPet();
+  }, [id, editando]);
+
   async function enviar(e: FormEvent) {
     e.preventDefault();
     setErro(null);
     setEnviando(true);
 
+    const dados = {
+      nome,
+      especie_id: Number(especieId),
+      idade: Number(idade),
+      porte,
+      descricao: descricao || null,
+      foto_url: fotoUrl || null,
+      status,
+    };
+
     try {
-      await criarPet({
-        nome,
-        especie_id: Number(especieId),
-        idade: Number(idade),
-        porte,
-        descricao: descricao || null,
-        foto_url: fotoUrl || null,
-      });
+      if (editando) {
+        await atualizarPet(Number(id), dados);
+      } else {
+        await criarPet(dados);
+      }
       navigate("/pets");
     } catch (err) {
-      if (err instanceof TypeError) {
-        setErro("Não foi possível conectar ao servidor. Ele está ligado?");
-      } else {
-        setErro((err as Error).message);
-      }
+      setErro(mensagemDeErro(err));
     } finally {
       setEnviando(false);
     }
   }
 
+  if (carregandoPet) return <p>Carregando pet...</p>;
+
   return (
     <div>
-      <h1>Cadastrar pet</h1>
+      <h1>{editando ? "Editar pet" : "Cadastrar pet"}</h1>
 
       {erro && <p style={{ color: "crimson" }}>{erro}</p>}
 
@@ -92,6 +129,15 @@ export default function FormularioPet() {
         </div>
 
         <div>
+          <label>Status</label>
+          <select value={status} onChange={(e) => setStatus(e.target.value)}>
+            <option value="disponivel">Disponível</option>
+            <option value="em_processo">Em processo</option>
+            <option value="adotado">Adotado</option>
+          </select>
+        </div>
+
+        <div>
           <label>Descrição</label>
           <textarea value={descricao} onChange={(e) => setDescricao(e.target.value)} />
         </div>
@@ -102,7 +148,7 @@ export default function FormularioPet() {
         </div>
 
         <button type="submit" disabled={enviando}>
-          {enviando ? "Salvando..." : "Cadastrar"}
+          {enviando ? "Salvando..." : editando ? "Salvar alterações" : "Cadastrar"}
         </button>
       </form>
     </div>
