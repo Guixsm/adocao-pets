@@ -42,3 +42,11 @@ export async function atualizarPet(id: number, dados: DadosPet): Promise<{ id: n
   });
   return tratarResposta(resposta);
 }
+
+export async function deletarPet(id: number): Promise<void> {
+  const resposta = await fetch(`${API_URL}/pets/${id}`, { method: "DELETE" });
+  if (!resposta.ok) {
+    const corpo = await resposta.json();
+    throw new Error(corpo.erro ?? "Erro ao remover o pet");
+  }
+}
