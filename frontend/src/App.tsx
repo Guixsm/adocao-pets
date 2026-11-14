@@ -3,6 +3,7 @@ import FormularioPet from "./pages/FormularioPet";
 import Home from "./pages/Home";
 import ListaPets from "./pages/ListaPets";
 import logo from "./assets/caozinho.gif";
+import NaoEncontrada from "./pages/NaoEncontrada";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/pets" element={<ListaPets />} />
         <Route path="/pets/novo" element={<FormularioPet />} />
         <Route path="/pets/:id/editar" element={<FormularioPet />} />
+        <Route path="*" element={<NaoEncontrada />} />
       </Routes>
 
       <footer className="rodape">
